@@ -1,0 +1,4 @@
+package org.SP2.routes;
+
+public class SecurityRoutes {
+}
