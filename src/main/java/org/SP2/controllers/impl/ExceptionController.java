@@ -4,6 +4,7 @@ package org.SP2.controllers.impl;
 import io.javalin.http.Context;
 import org.SP2.exceptions.ApiException;
 import org.SP2.exceptions.Message;
+import org.SP2.routes.Routes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

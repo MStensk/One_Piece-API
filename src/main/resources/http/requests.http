@@ -1,0 +1,90 @@
+### Get all crews
+GET http://localhost:7076/api/crew
+
+###
+
+### Get specific crew by ID
+GET http://localhost:7076/api/crew/1
+
+###
+
+### Get pirates for a crew
+GET http://localhost:7076/api/crew/1/pirates
+
+###
+
+### Create a new crew
+POST http://localhost:7076/api/crew
+Content-Type: application/json
+
+{
+  "name": "Straw Hat Pirates",
+  "ship": "Thousand Sunny",
+  "jollyRoger": "Straw Hat Skull",
+  "captain": "Monkey D. Luffy"
+}
+
+###
+
+### Update a crew (rename ship/captain/etc.)
+PUT http://localhost:7076/api/crew/1
+Content-Type: application/json
+
+{
+  "name": "Red Hair Pirates",
+  "ship": "",
+  "jollyRoger": "Straw Hat Skull",
+  "captain": "Monkey D. Luffy"
+}
+
+###
+
+### Delete a hotel
+DELETE http://localhost:7076/api/crew/1
+
+
+### Create a new pirate in crew 1
+POST http://localhost:7076/api/crew/1/pirates
+Content-Type: application/json
+
+{
+  "pirateName": "Monkey D. Luffy",
+  "pirateBirthday": "5-5",
+  "pirateGender": "Male",
+  "pirateAge": 21,
+  "pirateBounty": 3000000000
+}
+
+### Get all pirates
+GET http://localhost:7076/api/pirates
+
+### Get pirate by id
+GET http://localhost:7076/api/pirates/1
+
+### Create pirate (standalone, provide crewId)
+POST http://localhost:7076/api/pirates
+Content-Type: application/json
+
+{
+  "crewId": 1,
+  "pirateName": "Franky",
+  "pirateBirthday": "March 9",
+  "pirateGender": "Male",
+  "pirateAge": 36,
+  "pirateBounty": 394000000
+}
+
+### Update pirate
+PUT http://localhost:7076/api/pirates/1
+Content-Type: application/json
+
+{
+  "pirateName": "Franky (Cyborg)",
+  "pirateBirthday": "March 9",
+  "pirateGender": "Male",
+  "pirateAge": 37,
+  "pirateBounty": 400000000
+}
+
+### Delete pirate
+DELETE http://localhost:7076/api/pirates/1

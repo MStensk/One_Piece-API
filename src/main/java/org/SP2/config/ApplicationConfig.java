@@ -1,58 +1,139 @@
 package org.SP2.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.javalin.Javalin;
+import io.javalin.apibuilder.EndpointGroup;
 import io.javalin.config.JavalinConfig;
 import io.javalin.http.Context;
+import org.SP2.controllers.security.AccessController;
+import org.SP2.controllers.security.ISecurityController;
+import org.SP2.controllers.security.SecurityController;
+import org.SP2.exceptions.security.ApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static io.javalin.apibuilder.ApiBuilder.path;
+
 public class ApplicationConfig {
-    private static Routes routes = new Routes();
-    private static ObjectMapper jsonMapper = new Utils().getObjectMapper();
-    private static SecurityController securityController = SecurityController.getInstance();
-    private static AccessController accessController = new AccessController();
-    private static Logger logger = LoggerFactory.getLogger(ApplicationConfig.class);
-    private static int count = 1;
+    private ObjectMapper jsonMapper = new ObjectMapper();
+    private Logger logger = LoggerFactory.getLogger(ApplicationConfig.class);
+    private static ApplicationConfig appConfig;
+    private static JavalinConfig javalinConfig;
+    private static Javalin app;
+    ISecurityController securityController = new SecurityController();
+    AccessController access = new AccessController(securityController);
 
-    public static void configuration(JavalinConfig config) {
-        config.showJavalinBanner = false;
-        config.bundledPlugins.enableRouteOverview("/routes", Role.ANYONE);
-        config.router.contextPath = "/api"; // base path for all endpoints
-        config.router.apiBuilder(routes.getRoutes());
-        config.router.apiBuilder(SecurityRoutes.getSecuredRoutes());
-        config.router.apiBuilder(SecurityRoutes.getSecurityRoutes());
+    private ApplicationConfig() {
     }
 
-    public static Javalin startServer(int port) {
-        Javalin app = Javalin.create(ApplicationConfig::configuration);
+    public static ApplicationConfig getInstance() {
+        if (appConfig == null) {
+            appConfig = new ApplicationConfig();
+        }
+        return appConfig;
+    }
 
-        app.beforeMatched(accessController::accessHandler);
-        app.after(ApplicationConfig::afterRequest);
+    public ApplicationConfig initiateServer() {
+        app = Javalin.create(config -> {
+            javalinConfig = config;
+            config.bundledPlugins.enableDevLogging(); // enables extensive development logging in terminal
+            config.staticFiles.add("/public"); // enables serving of static files from the public folder in the classpath. PROs: easy to use, CONs: you have to restart the server every time you change a file
+            config.http.defaultContentType = "application/json"; // default content type for requests
+            config.router.contextPath = "/api"; // base path for all routes
+            config.bundledPlugins.enableRouteOverview("/routes"); // html overview of all registered routes at /routes for api documentation: https://javalin.io/news/2019/08/11/javalin-3.4.1-released.html
+        });
+        app.beforeMatched(access.accessHandler());
+        return appConfig;
+    }
 
-        app.exception(Exception.class, ApplicationConfig::generalExceptionHandler);
-        app.exception(ApiException.class, ApplicationConfig::apiExceptionHandler);
+    public ApplicationConfig setRoute(EndpointGroup route) {
+        javalinConfig.router.apiBuilder(() -> {
+            path("/", route);
+        });
+        return appConfig;
+    }
+
+
+    public ApplicationConfig setCORS() {
+        app.before(ctx -> {
+            setCorsHeaders(ctx);
+        });
+        app.options("/*", ctx -> { // Burde nok ikke være nødvendig?
+            setCorsHeaders(ctx);
+        });
+        return appConfig;
+    }
+
+    private static void setCorsHeaders(Context ctx) {
+        ctx.header("Access-Control-Allow-Origin", "*");
+        ctx.header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
+        ctx.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+        ctx.header("Access-Control-Allow-Credentials", "true");
+    }
+
+    // Adding below methods to ApplicationConfig, means that EVERY ROUTE will be checked for security roles. So open routes must have a role of ANYONE
+//    public ApplicationConfig checkSecurityRoles() {
+//        app.beforeMatched(securityController::authenticate); // check if there is a valid token in the header
+//        app.beforeMatched(securityController::authorize); // check if the user has the required role
+//        return appConfig;
+//    }
+
+    public ApplicationConfig startServer(int port) {
         app.start(port);
-        return app;
+
+        return appConfig;
     }
 
-    public static void afterRequest(Context ctx) {
-        String requestInfo = ctx.req().getMethod() + " " + ctx.req().getRequestURI();
-        logger.info(" Request {} - {} was handled with status code {}", count++, requestInfo, ctx.status());
-    }
-
-    public static void stopServer(Javalin app) {
+    public ApplicationConfig stopServer() {
         app.stop();
+        return appConfig;
+    }
+//    public ApplicationConfig setApiExceptionHandling() {
+//        app.exception(ApiException.class, (e, ctx) -> {
+//            int statusCode = e.getStatusCode();
+//            ObjectNode on = jsonMapper
+//                    .createObjectNode()
+//                    .put("status", statusCode)
+//                    .put("msg", e.getMessage());
+//            ctx.json(on);
+//            ctx.status(statusCode);
+//        });
+//        return appConfig;
+//    }
+
+
+
+    public ApplicationConfig setGeneralExceptionHandling() {
+        app.exception(Exception.class, (e, ctx) -> {
+            int statusCode = (e instanceof ApiException apiEx)
+                    ? apiEx.getCode()
+                    : 500;
+
+            String message = (e instanceof ApiException)
+                    ? e.getMessage()
+                    : "Internal server error";
+
+            logger.error("An exception occurred", e);
+
+            ObjectNode on = jsonMapper
+                    .createObjectNode()
+                    .put("status", statusCode)
+                    .put("msg", message);
+
+            ctx.json(on);
+            ctx.status(statusCode);
+        });
+        return appConfig;
     }
 
-    private static void generalExceptionHandler(Exception e, Context ctx) {
-        logger.error("An unhandled exception occurred", e.getMessage());
-        ctx.json(Utils.convertToJsonMessage(ctx, "error", e.getMessage()));
-    }
 
-    public static void apiExceptionHandler(ApiException e, Context ctx) {
-        ctx.status(e.getCode());
-        logger.warn("An API exception occurred: Code: {}, Message: {}", e.getCode(), e.getMessage());
-        ctx.json(Utils.convertToJsonMessage(ctx, "warning", e.getMessage()));
+
+    public ApplicationConfig beforeFilter() {
+        app.before(ctx -> {
+            String pathInfo = ctx.req().getPathInfo();
+            ctx.req().getHeaderNames().asIterator().forEachRemaining(el -> System.out.println(el));
+        });
+        return appConfig;
     }
 }

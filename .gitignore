@@ -1,39 +1,126 @@
+# ============================================
+# Java / Maven
+# ============================================
 target/
-!.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
-.kotlin
-
-### IntelliJ IDEA ###
-.idea/modules.xml
-.idea/jarRepositories.xml
-.idea/compiler.xml
-.idea/libraries/
-*.iws
+*.class
+*.jar
+*.war
+*.ear
 *.iml
+*.log
+hs_err_pid*
+replay_pid*
+
+# Maven wrapper files (optional to ignore if not used)
+.mvn/
+!/.mvn/wrapper/maven-wrapper.jar
+
+# ============================================
+# IntelliJ IDEA
+# ============================================
+.idea/
+*.iws
 *.ipr
+*.iml
+out/
 
-### Eclipse ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
-
-### VS Code ###
+# ============================================
+# VS Code
+# ============================================
 .vscode/
+.history/
+*.code-workspace
 
-### Mac OS ###
+# ============================================
+# Eclipse / NetBeans
+# ============================================
+.project
+.classpath
+.settings/
+.nb-gradle/
+.nbproject/private/
+
+# ============================================
+# Operating System / Misc
+# ============================================
 .DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.tmp
+*~
+.env
+.env.*
+*.bak
+*.old
+
+# ============================================
+# Docker
+# ============================================
+docker-compose.override.yml
+docker-compose.local.yml
+.docker/
+docker/logs/
+docker/data/
+*.pid
+
+# ============================================
+# Logs and runtime data
+# ============================================
+logs/
+*.log
+*.out
+*.pid
+nohup.out
+
+# ============================================
+# Test reports
+# ============================================
+/test-output/
+/surefire-reports/
+/failsafe-reports/
+
+# ============================================
+# IntelliJ HTTP client (optional)
+# ============================================
+/http-requests.log
+/*.http
+
+# ============================================
+# Build tools / temporary files
+# ============================================
+/bin/
+/build/
+/dist/
+/tmp/
+/*.zip
+/*.tar.gz
+
+# ============================================
+# Node (if ever using front-end)
+# ============================================
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# ============================================
+# Sensitive / config files
+# ============================================
+config.properties
+properties-from-pom.properties
+secrets.yml
+*.key
+*.pem
+*.crt
+
+# ============================================
+# Java test coverage
+# ============================================
+/jacoco.exec
+/.idea/**/workspace.xml
+
+# ============================================
+# IntelliJ REST client data
+# ============================================
+/.idea/httpRequests/

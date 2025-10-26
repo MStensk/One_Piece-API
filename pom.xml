@@ -17,7 +17,7 @@
         <testcontainers.version>1.18.0</testcontainers.version>
         <junit.version>5.9.1</junit.version>
         <jbcrypt.version>0.4</jbcrypt.version>
-        <token.security.version>1.0.1</token.security.version>
+        <token.security.version>1.0.2</token.security.version>
 
         <!--  Javalin    -->
         <javalin.port>7070</javalin.port>

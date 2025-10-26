@@ -1,11 +1,22 @@
 package org.SP2.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
+import lombok.*;
+import org.SP2.dtos.CrewDTO;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+
+@Entity
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@ToString
+@Table (name = "crew")
 public class Crew {
 
     @Id
@@ -18,7 +29,7 @@ public class Crew {
     private String crewName;
 
     @Setter
-    @Column(name = "crew_ship", nullable = false, unique = true)
+    @Column(name = "crew_ship", nullable = false)
     private String crewShip;
 
     @Setter
@@ -28,5 +39,21 @@ public class Crew {
     @Setter
     @Column(name = "crew_captain", nullable = false, unique = true)
     private String crewCaptain;
+
+    @OneToMany(mappedBy = "crew", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @ToString.Exclude
+    @JsonManagedReference
+    private List<Pirate> pirates = new ArrayList<>();
+
+    public Crew(CrewDTO crewDTO) {
+        this.id = crewDTO.getId();
+        this.crewName = crewDTO.getName();
+        this.crewShip = crewDTO.getShip();
+        this.crewCaptain = crewDTO.getCaptain();
+        this.crewJollyRoger = crewDTO.getJollyRoger();
+        this.pirates = crewDTO.getPirates().stream()
+                .map(pirateDTO -> new Pirate(pirateDTO, this))
+                .collect(Collectors.toList());
+    }
 
 }

@@ -1,0 +1,21 @@
+api.yourdomain.com {
+
+    # Reverse proxy to your running Javalin container (e.g., port 7076)
+    reverse_proxy api:7076
+
+    # Optional: basic logging
+    log {
+        output file /var/log/caddy/onepiece.log
+        format single_field common_log
+    }
+
+    # Optional security headers
+    header {
+        Access-Control-Allow-Origin "*"
+        Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+        Access-Control-Allow-Headers "Content-Type, Authorization"
+        X-Content-Type-Options nosniff
+        X-Frame-Options DENY
+        Referrer-Policy no-referrer
+    }
+}

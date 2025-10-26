@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>One Piece API – Documentation</title>
+    <style>
+        body { font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif; margin: 24px; }
+        h1 { margin: 0 0 8px; }
+        h2 { margin-top: 32px; }
+        table { border-collapse: collapse; width: 100%; margin-top: 8px; }
+        th, td { border: 1px solid #ddd; text-align: left; padding: 10px; vertical-align: top; }
+        th { background-color: #f2f2f2; }
+        code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
+        .tag { display: inline-block; padding: 2px 8px; border-radius: 10px; background: #eef; color: #334; font-size: 12px; margin-left: 8px; }
+        .note { font-size: 13px; color: #555; }
+        .get { background:#e9f7ef; }
+        .post { background:#fef6e4; }
+        .put { background:#fff7e6; }
+        .del { background:#fdecea; }
+    </style>
+</head>
+<body>
+
+<h1>One Piece API <span class="tag">/api</span></h1>
+<p class="note">
+    Public GET endpoints are open. POST/PUT/DELETE require a Bearer token with role <code>USER</code>.
+</p>
+
+<h2>Auth</h2>
+<table>
+    <tr><th>HTTP Method &amp; URL Path</th><th>Response</th><th>Request Body (JSON)</th></tr>
+
+    <tr class="post">
+        <td>POST /api/auth/register</td>
+        <td>
+<pre>{
+  "token": "jwt-string",
+  "username": "luffy"
+}</pre>
+            <div class="note">Creates user and assigns role USER.</div>
+        </td>
+        <td>
+<pre>{
+  "username": "luffy",
+  "password": "gumgum"
+}</pre>
+        </td>
+    </tr>
+
+    <tr class="post">
+        <td>POST /api/auth/login</td>
+        <td>
+<pre>{
+  "token": "jwt-string",
+  "username": "luffy"
+}</pre>
+            <div class="note">Use <code>Authorization: Bearer &lt;token&gt;</code> for protected routes.</div>
+        </td>
+        <td>
+<pre>{
+  "username": "luffy",
+  "password": "gumgum"
+}</pre>
+        </td>
+    </tr>
+</table>
+
+<h2>Crews</h2>
+<table>
+    <tr><th>HTTP Method &amp; URL Path</th><th>Response</th><th>Request Body (JSON)</th></tr>
+
+    <tr class="get">
+        <td>GET /api/crew</td>
+        <td>
+<pre>[
+  {
+    "id": 1,
+    "name": "Straw Hat Pirates",
+    "ship": "Thousand Sunny",
+    "jollyRoger": "Straw Hat Skull",
+    "captain": "Monkey D. Luffy",
+    "pirates": [
+      { "id": 10, "crewId": 1, "pirateName": "Roronoa Zoro", "pirateAge": 21, "pirateGender": "Male", "pirateBounty": 1111000000, "pirateBirthday": "Nov 11" }
+    ]
+  }
+]</pre>
+        </td>
+        <td></td>
+    </tr>
+
+    <tr class="get">
+        <td>GET /api/crew/{id}</td>
+        <td>
+<pre>{
+  "id": 1,
+  "name": "Straw Hat Pirates",
+  "ship": "Thousand Sunny",
+  "jollyRoger": "Straw Hat Skull",
+  "captain": "Monkey D. Luffy",
+  "pirates": [
+    { "id": 10, "crewId": 1, "pirateName": "Roronoa Zoro", "pirateAge": 21, "pirateGender": "Male", "pirateBounty": 1111000000, "pirateBirthday": "Nov 11" }
+  ]
+}</pre>
+        </td>
+        <td></td>
+    </tr>
+
+    <tr class="post">
+        <td>POST /api/crew <span class="tag">Protected (USER)</span></td>
+        <td>
+<pre>{
+  "id": 2,
+  "name": "Red Hair Pirates",
+  "ship": "Red Force",
+  "jollyRoger": "Red-haired Skull",
+  "captain": "Shanks",
+  "pirates": []
+}</pre>
+        </td>
+        <td>
+<pre>{
+  "name": "Red Hair Pirates",
+  "ship": "Red Force",
+  "jollyRoger": "Red-haired Skull",
+  "captain": "Shanks"
+}</pre>
+        </td>
+    </tr>
+
+    <tr class="put">
+        <td>PUT /api/crew/{id} <span class="tag">Protected (USER)</span></td>
+        <td>
+<pre>{
+  "id": 1,
+  "name": "Straw Hat Pirates",
+  "ship": "Going Merry (Legacy)",
+  "jollyRoger": "Straw Hat Skull",
+  "captain": "Monkey D. Luffy",
+  "pirates": [ ... ]
+}</pre>
+        </td>
+        <td>
+<pre>{
+  "name": "Straw Hat Pirates",
+  "ship": "Going Merry (Legacy)",
+  "jollyRoger": "Straw Hat Skull",
+  "captain": "Monkey D. Luffy"
+}</pre>
+        </td>
+    </tr>
+
+    <tr class="del">
+        <td>DELETE /api/crew/{id} <span class="tag">Protected (USER)</span></td>
+        <td><span class="note">204 No Content</span></td>
+        <td></td>
+    </tr>
+
+    <tr class="get">
+        <td>GET /api/crew/{crewId}/pirates</td>
+        <td>
+<pre>[
+  {
+    "id": 10,
+    "crewId": 1,
+    "pirateName": "Roronoa Zoro",
+    "pirateBirthday": "Nov 11",
+    "pirateGender": "Male",
+    "pirateAge": 21,
+    "pirateBounty": 1111000000
+  }
+]</pre>
+        </td>
+        <td></td>
+    </tr>
+
+    <tr class="post">
+        <td>POST /api/crew/{crewId}/pirates <span class="tag">Protected (USER)</span></td>
+        <td>
+<pre>{
+  "id": 11,
+  "crewId": 1,
+  "pirateName": "Nami",
+  "pirateBirthday": "July 3",
+  "pirateGender": "Female",
+  "pirateAge": 20,
+  "pirateBounty": 366000000
+}</pre>
+        </td>
+        <td>
+<pre>{
+  "pirateName": "Nami",
+  "pirateBirthday": "July 3",
+  "pirateGender": "Female",
+  "pirateAge": 20,
+  "pirateBounty": 366000000
+}</pre>
+        </td>
+    </tr>
+</table>
+
+<h2>Pirates</h2>
+<table>
+    <tr><th>HTTP Method &amp; URL Path</th><th>Response</th><th>Request Body (JSON)</th></tr>
+
+    <tr class="get">
+        <td>GET /api/pirates</td>
+        <td>
+<pre>[
+  {
+    "id": 10,
+    "crewId": 1,
+    "pirateName": "Roronoa Zoro",
+    "pirateBirthday": "Nov 11",
+    "pirateGender": "Male",
+    "pirateAge": 21,
+    "pirateBounty": 1111000000
+  },
+  {
+    "id": 11,
+    "crewId": 1,
+    "pirateName": "Nami",
+    "pirateBirthday": "July 3",
+    "pirateGender": "Female",
+    "pirateAge": 20,
+    "pirateBounty": 366000000
+  }
+]</pre>
+        </td>
+        <td></td>
+    </tr>
+
+    <tr class="get">
+        <td>GET /api/pirates/{id}</td>
+        <td>
+<pre>{
+  "id": 10,
+  "crewId": 1,
+  "pirateName": "Roronoa Zoro",
+  "pirateBirthday": "Nov 11",
+  "pirateGender": "Male",
+  "pirateAge": 21,
+  "pirateBounty": 1111000000
+}</pre>
+        </td>
+        <td></td>
+    </tr>
+
+    <tr class="post">
+        <td>POST /api/pirates <span class="tag">Protected (USER)</span></td>
+        <td>
+<pre>{
+  "id": 12,
+  "crewId": 1,
+  "pirateName": "Tony Tony Chopper",
+  "pirateBirthday": "Dec 24",
+  "pirateGender": "Male",
+  "pirateAge": 17,
+  "pirateBounty": 1000
+}</pre>
+        </td>
+        <td>
+<pre>{
+  "crewId": 1,
+  "pirateName": "Tony Tony Chopper",
+  "pirateBirthday": "Dec 24",
+  "pirateGender": "Male",
+  "pirateAge": 17,
+  "pirateBounty": 1000
+}</pre>
+        </td>
+    </tr>
+
+    <tr class="put">
+        <td>PUT /api/pirates/{id} <span class="tag">Protected (USER)</span></td>
+        <td>
+<pre>{
+  "id": 12,
+  "crewId": 1,
+  "pirateName": "Tony Tony Chopper",
+  "pirateBirthday": "Dec 24",
+  "pirateGender": "Male",
+  "pirateAge": 18,
+  "pirateBounty": 1000
+}</pre>
+        </td>
+        <td>
+<pre>{
+  "pirateName": "Tony Tony Chopper",
+  "pirateBirthday": "Dec 24",
+  "pirateGender": "Male",
+  "pirateAge": 18,
+  "pirateBounty": 1000
+}</pre>
+        </td>
+    </tr>
+
+    <tr class="del">
+        <td>DELETE /api/pirates/{id} <span class="tag">Protected (USER)</span></td>
+        <td><span class="note">204 No Content</span></td>
+        <td></td>
+    </tr>
+</table>
+
+</body>
+</html>

@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  api:
+    image: yourdockerhubusername/onepiece-api:latest
+    container_name: onepiece-api
+    restart: always
+    environment:
+      - DB_NAME=onepiece
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
+    expose:
+      - "7076"
+
+  caddy:
+    image: caddy:2
+    container_name: caddy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:

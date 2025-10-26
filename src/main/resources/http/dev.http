@@ -2,13 +2,13 @@
 GET {{url}}/auth/test/
 
 ### Populate the database with some data
-GET {{url}}/hotels/populate/
+GET {{url}}/crew/populate/
 
 ### Create a new user - this one will only get a USER role by default
 POST {{url}}/auth/register/
 
 {
-    "username": "user",
+    "username": "user2",
     "password": "test123"
 }
 
@@ -16,7 +16,7 @@ POST {{url}}/auth/register/
 POST {{url}}/auth/login/
 
 {
-    "username": "user",
+    "username": "user2",
     "password": "test123"
 }
 
@@ -47,36 +47,38 @@ Accept: application/json
 Authorization: Bearer {{jwt_token}}
 
 ###
-GET {{url}}/hotels
+GET {{url}}/crew
 Accept: application/json
 Authorization: Bearer {{jwt_token}}
 
 ###
-GET {{url}}/hotels/2
+GET {{url}}/crew/2
 
 ###
-POST {{url}}/hotels
+POST {{url}}/crew
 Content-Type: application/json
 Authorization: Bearer {{jwt_token}}
 
 {
-  "hotelName": "Holiday Inn",
-  "hotelAddress": "Stuttgart",
-  "hotelType": "STANDARD"
+  "name": "Straw Hat Pirates",
+  "ship": "Thousand Sunny",
+  "jollyRoger": "Straw Hat Skull",
+  "captain": "Monkey D. Luffy"
 }
 
 ###
-PUT {{url}}/hotels/3
+PUT {{url}}/crew/3
 Content-Type: application/json
 
 {
-  "hotelName": "Ritz Carlton",
-  "hotelAddress": "London City",
-  "hotelType": "LUXURY"
+  "name": "Red Hair Pirates",
+  "ship": "Red Force",
+  "jollyRoger": "Skull with red scars",
+  "captain": "Shanks"
 }
 
 ###
-DELETE {{url}}/hotels/5
+DELETE {{url}}/hotels/3
 Authorization: Bearer {{jwt_token}}
 
 // Room API
@@ -85,16 +87,18 @@ GET {{url}}/rooms
 Authorization: Bearer {{jwt_token}}
 
 ###
-GET {{url}}/rooms/1
+GET {{url}}/crew/1/pirates/1
 Authorization: Bearer {{jwt_token}}
 
 ###
-POST {{url}}/rooms/hotel/1
+POST {{url}}/crew/1/pirates/1
 Content-Type: application/json
 Authorization: Bearer {{jwt_token}}
 
 {
-  "roomNumber": 11,
-  "roomPrice": 1150,
-  "roomType": "SINGLE"
+  "pirateName": "Monkey D. Luffe",
+  "pirateBirthday": "5-5",
+  "pirateGender": "Male",
+  "pirateAge": 21,
+  "pirateBounty": 3000000000
 }
