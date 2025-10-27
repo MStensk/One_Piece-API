@@ -9,11 +9,13 @@ import static io.javalin.apibuilder.ApiBuilder.*;
 public class Routes {
     private final CrewRoute crewRoute = new CrewRoute();
     private final PirateRoute pirateRoute = new PirateRoute();
+    private final PopulateRoute populateRoute = new PopulateRoute();
 
     public EndpointGroup all() {
         return () -> {
             path("/", crewRoute.routes());
             path("/", pirateRoute.routes());
+            path("/", populateRoute.routes());
         };
     }
 }

@@ -1,14 +1,13 @@
-# Start with Amazon Corretto 17 Alpine base image
-FROM amazoncorretto:18-alpine
+# ---- Build stage ----
+FROM maven:3.9.8-eclipse-temurin-21 AS build
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+RUN mvn -q -DskipTests package
 
-# Install curl on Alpine
-RUN apk update && apk add --no-cache curl
-
-# Copy the jar file into the image
-COPY target/app.jar /app.jar
-
-# Expose the port your app runs on
+# ---- Runtime stage ----
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+COPY --from=build /app/target/*.jar /app/app.jar
 EXPOSE 7076
-
-# Command to run your app
-CMD ["java", "-jar", "/app.jar"]
+ENTRYPOINT ["java","-jar","/app/app.jar"]
