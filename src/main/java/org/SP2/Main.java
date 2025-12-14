@@ -11,6 +11,7 @@ public class Main {
         ApplicationConfig
                 .getInstance()
                 .initiateServer()
+                .setCORS()
                 .setRoute(new Routes().all())
                 .setRoute(new SecurityRoutes().getSecurityRoute)
                 .startServer(7076);
